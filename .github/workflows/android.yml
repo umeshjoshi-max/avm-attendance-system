@@ -1,1 +1,37 @@
 
+name: Build Android APK (Unsigned)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Install Gradle and tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gradle
+          gradle --version
+
+      - name: Build Release APK (unsigned)
+        run: gradle assembleRelease
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: avm-release-apk
+          path: app/build/outputs/apk/release/*.apk
+
